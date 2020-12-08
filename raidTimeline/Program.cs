@@ -12,6 +12,7 @@ namespace raidTimeline
 			var path = ParseArgs(args, "-path");
 			var outputFileName = ParseArgs(args, "-output", "index.html");
 			var token = ParseArgs(args, "-token");
+			var watch = ParseArgs(args, "-watch");
 			var number = ParseArgs(args, "-number", "25");
 
 			if(!Directory.Exists(path))
@@ -25,20 +26,25 @@ namespace raidTimeline
 			{
 				tc.CreateTimelineFileFromWeb(path, outputFileName, token, int.Parse(number));
 			}
-			else
+			else if (watch != null)
 			{
+				tc.CreateTimelineFileFromDisk(path, outputFileName);
+				tc.run(path, outputFileName);
+			}
+			else
+            {
 				tc.CreateTimelineFileFromDisk(path, outputFileName);
 			}
 
-			var htmlFilePath = Path.Combine(path, outputFileName);
+            var htmlFilePath = Path.Combine(path, outputFileName);
 
-			ProcessStartInfo psi = new ProcessStartInfo
-			{
-				FileName = htmlFilePath,
-				UseShellExecute = true
-			};
-			Process.Start(psi);
-		}
+            ProcessStartInfo psi = new ProcessStartInfo
+            {
+                FileName = htmlFilePath,
+                UseShellExecute = true
+            };
+            Process.Start(psi);
+        }
 
 		static string ParseArgs(string[] args, string search, string defaultValue = null)
 		{

@@ -11,12 +11,31 @@ namespace raidTimelineLogic
 {
 	public class TimelineCreator : ITimelineCreator
 	{
+
+		public void run(string path, string outputFileName)
+        {
+			using (var watcher = new FileSystemWatcher())
+			{
+				watcher.Path = path;
+				watcher.Filter = "*l.html";
+				watcher.NotifyFilter = NotifyFilters.LastWrite;
+				watcher.Changed += (object source, FileSystemEventArgs e) =>
+				{
+					Console.WriteLine(e.FullPath);
+					CreateTimelineFileFromDisk(path, outputFileName);
+				};
+				watcher.EnableRaisingEvents = true;
+
+				while (Console.Read() != 'q');
+			}
+		}
+
 		public void CreateTimelineFileFromDisk(string path, string outputFileName)
 		{
 			var parser = new EiHtmlParser();
 			var models = new List<RaidModel>();
 
-			foreach (var filePath in Directory.GetFiles(path, "*.html"))
+			foreach (var filePath in Directory.GetFiles(path, "*l.html"))
 			{
 				Console.WriteLine($"Parsing log: {Path.GetFileName(filePath)}");
 				var model = parser.ParseLog(filePath);
@@ -65,7 +84,7 @@ namespace raidTimelineLogic
 			}
 
 			StringBuilder sb = new StringBuilder();
-
+			models.Sort((RaidModel l, RaidModel r) => r.OccurenceStart.CompareTo(l.OccurenceStart));
 			foreach (var raidDate in models.GroupBy(i => i.OccurenceStart.Date))
 			{
 				CreateHeader(sb, raidDate);
@@ -132,7 +151,7 @@ namespace raidTimelineLogic
 
 		private static void CreateTimeline(StringBuilder sb, IGrouping<DateTime, RaidModel> raidDate)
 		{
-			foreach (var model in raidDate.OrderBy(i => i.OccurenceEnd))
+			foreach (var model in raidDate.OrderBy(i => i.OccurenceEnd).Reverse())
 			{
 				if (model.Killed)
 					sb.Append(HtmlCreator.CreateEncounterHtmlPass(model));
