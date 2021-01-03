@@ -58,14 +58,12 @@ namespace raidTimelineLogic
 
 		private static string CommonHtml(RaidModel model)
 		{
-			var encounterTime = model.OccurenceEnd - model.OccurenceStart;
-
 			var top = $@"
 				<div class=""content"">
 					<a href=""{model.LogUrl}"" target=""_blank"" style=""color: #aaa; text-decoration: none;"">
 						<img src=""{model.EncounterIcon}"" alt=""{HttpUtility.HtmlEncode(model.EncounterName)}"" width=""64"" height=""64"" style=""float: right;"">
 						<h2>{HttpUtility.HtmlEncode(model.EncounterName)}</h2>
-						<p>{model.OccurenceStart.ToLongTimeString()} &rArr; {model.OccurenceEnd.ToLongTimeString()} ({encounterTime.Minutes}m {encounterTime.Seconds}s)
+						<p>{model.OccurenceStart.ToLongTimeString()} &rArr; {model.OccurenceEnd.ToLongTimeString()} ({model.EncounterTime})
 					</a>
 					";
 
