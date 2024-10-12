@@ -97,7 +97,7 @@ namespace raidTimeline.Logic
                 }
             }
 
-            var buffs = logData.phases[0].boonStats;
+            var buffs = logData.phases[0].buffsStatContainer.boonStats;
             maps = maps.OrderBy(i => i.Index).ToList();
 
             for (var i = 0; i < maps.Count; i++)
